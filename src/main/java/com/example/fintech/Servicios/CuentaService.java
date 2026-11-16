@@ -1,6 +1,8 @@
 package com.example.fintech.Servicios;
 
 
+import com.example.fintech.Excepciones.CuentaNoEncontradaExcepcion;
+import com.example.fintech.Excepciones.UsuarioNoEncontradoExcepcion;
 import com.example.fintech.Moldes.Cuenta;
 import com.example.fintech.Moldes.Usuario;
 import com.example.fintech.repositorios.RepositorioCuenta;
@@ -24,11 +26,19 @@ public class CuentaService {
     }
 
     public Cuenta searchById(Long id) {
-        return repositorioCuenta.findById(id).orElse(null);
+        return repositorioCuenta.findById(id)
+                .orElseThrow(() -> new CuentaNoEncontradaExcepcion(id));
     }
 
 
     public List<Cuenta> findByUsuarioId(Long usuarioId) {
+
+        Usuario usuario = usuarioService.searchById(usuarioId);
+
+        if (usuario == null) {
+            throw new UsuarioNoEncontradoExcepcion(usuarioId);
+        }
+
         return repositorioCuenta.findByUsuarioId(usuarioId);
     }
 
